@@ -27,6 +27,14 @@ if [[ -z "$REF" ]]; then
 fi
 echo "Syncing $PREFIX/ with $UPSTREAM_URL @ $REF"
 
+# git subtree needs the previously imported upstream commit to be present
+# locally. Look it up from the last squash commit and shallow-fetch it.
+PREV="$(git log -1 --grep="^git-subtree-dir: $PREFIX/*\$" --format=%B \
+  | sed -n 's/^git-subtree-split: //p')"
+if [[ -n "$PREV" ]] && ! git cat-file -e "$PREV^{commit}" 2>/dev/null; then
+  git fetch --depth=1 "$UPSTREAM_URL" "$PREV"
+fi
+
 git fetch --depth=1 "$UPSTREAM_URL" "$REF"
 SHA="$(git rev-parse FETCH_HEAD)"
 
