@@ -30,7 +30,7 @@ echo "Syncing $PREFIX/ with $UPSTREAM_URL @ $REF"
 git fetch --depth=1 "$UPSTREAM_URL" "$REF"
 SHA="$(git rev-parse FETCH_HEAD)"
 
-git subtree pull --prefix="$PREFIX" FETCH_HEAD --squash \
+git subtree merge --prefix="$PREFIX" "$SHA" --squash \
   -m "Sync $PREFIX/ with upstream tailscale-android $REF ($SHA)"
 
 echo
